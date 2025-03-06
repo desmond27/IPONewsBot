@@ -91,8 +91,15 @@ class IPONewsBot(telegramClient: TelegramClient, botUsername: String, ipoService
             .action { ctx: MessageContext ->
                 logger.info { "Refreshing IPO db." }
                 silent.send("Refreshing IPO data from ${service.getServiceName()}", ctx.chatId())
-                service.saveData()
-                silent.send("IPO data refreshed from ${service.getServiceName()}", ctx.chatId())
+                val result = service.saveData()
+
+                if (result != null)
+                    silent.send("IPO data refreshed successfully from ${service.getServiceName()}", ctx.chatId())
+                else
+                    silent.send(
+                        "Could not refresh IPO data from ${service.getServiceName()}. Check logs for errors.",
+                        ctx.chatId()
+                    )
             }
             .build()
     }

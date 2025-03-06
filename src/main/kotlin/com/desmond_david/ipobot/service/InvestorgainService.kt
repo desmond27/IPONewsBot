@@ -30,25 +30,36 @@ class InvestorgainService : IPOService {
                 khttp.get(SERVICE_URL).jsonObject
             val reportTableDataJsonArray = responseJsonObject.get("reportTableData") as JSONArray
             for (entry in reportTableDataJsonArray) {
+                logger.debug { "Reading entry: $entry" }
                 val jsonEntry = entry as JSONObject
                 val gmpValue = Jsoup.parse(jsonEntry.getString("GMP")).text()
+
+                val price = if(jsonEntry.getString("Price") == "NA" || jsonEntry.getString("Price") == "") -1
+                else jsonEntry.getInt("Price")
+
+                val lot = if(jsonEntry.getString("Lot") == "TBD" || jsonEntry.getString("Lot").isEmpty()) -1
+                else jsonEntry.getString("Lot").toInt()
+
                 ipoDataList.add(
                     IpoDto(
                         jsonEntry.getString("IPO"),
                         Jsoup.parse(jsonEntry.getString("Fire Rating")).text(),
                         Jsoup.parse(jsonEntry.getString("Status")).text(),
-                        jsonEntry.getInt("Price"),
+                        price,
                         if (gmpValue == "--") -1 else gmpValue.toInt(),
                         Jsoup.parse(jsonEntry.getString("Est Listing")).text(),
                         Jsoup.parse(jsonEntry.getString("IPO Size")).text(),
-                        jsonEntry.getString("Lot").toInt(),
-                        LocalDate.parse(jsonEntry.getString("~Srt_Open")),
-                        LocalDate.parse(jsonEntry.getString("~Srt_Close")),
-                        LocalDate.parse(jsonEntry.getString("~Srt_BoA_Dt")),
-                        LocalDate.parse(jsonEntry.getString("~Str_Listing")),
+                        lot,
+                        if(jsonEntry.getString("~Srt_Open").isEmpty()) null
+                        else LocalDate.parse(jsonEntry.getString("~Srt_Open")),
+                        if(jsonEntry.getString("~Srt_Close").isEmpty()) null
+                        else LocalDate.parse(jsonEntry.getString("~Srt_Close")),
+                        if(jsonEntry.getString("~Srt_BoA_Dt").isEmpty()) null
+                        else LocalDate.parse(jsonEntry.getString("~Srt_BoA_Dt")),
+                        if(jsonEntry.getString("~Str_Listing").isEmpty()) null
+                        else LocalDate.parse(jsonEntry.getString("~Str_Listing")),
                     )
                 )
-
             }
             DatabaseHelper.storeToDb(ipoDataList)
             return reportTableDataJsonArray.length()

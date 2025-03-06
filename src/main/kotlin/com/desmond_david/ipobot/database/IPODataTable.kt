@@ -17,10 +17,10 @@ object IPODataTable : IdTable<String>("ipodata") {
     val estListing = varchar("estListing", 100)
     val ipoSize = varchar("ipoSize", 100)
     val lot = integer("lot")
-    val open = date("open")
-    val close = date("close").index()
-    val boaDate = date("boaDate")
-    val listing = date("listing")
+    val open = date("open").nullable()
+    val close = date("close").nullable()
+    val boaDate = date("boaDate").nullable()
+    val listing = date("listing").nullable()
     override val id: Column<EntityID<String>> = ipo.entityId()
 }
 
@@ -51,8 +51,8 @@ data class IpoDto(
     val estListing: String,
     val ipoSize: String,
     val lot: Int,
-    val open: LocalDate,
-    val close: LocalDate,
-    val boaDate: LocalDate,
-    val listing: LocalDate,
+    val open: LocalDate?,
+    val close: LocalDate?,
+    val boaDate: LocalDate?,
+    val listing: LocalDate?,
 )
