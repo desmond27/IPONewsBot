@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.upsert
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import java.io.File
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -22,7 +23,7 @@ class IPODataTableDaoTableTest {
                 it[rating] = "IPO rating"
                 it[status] = "status"
                 it[price] = 100
-                it[gmp] = 63
+                it[gmp] = 63.5
                 it[estListing] = "est. listing"
                 it[ipoSize] = "100 Cr."
                 it[lot] = 1000
@@ -38,7 +39,7 @@ class IPODataTableDaoTableTest {
             assertEquals("IPO rating", ipoEntry.rating)
             assertEquals("status", ipoEntry.status)
             assertEquals(100, ipoEntry.price)
-            assertEquals(63, ipoEntry.gmp)
+            assertEquals(63.5, ipoEntry.gmp)
             assertEquals("est. listing", ipoEntry.estListing)
             assertEquals("100 Cr.", ipoEntry.ipoSize)
             assertEquals(1000, ipoEntry.lot)
@@ -51,5 +52,9 @@ class IPODataTableDaoTableTest {
             // Putting this in a separate transaction for observational purposes.
             IPODataTable.deleteAll()
         }
+
+        // Delete the db file to avoid interfering with other tests.
+        val ipobotdbFile = File("./ipobot.db")
+        ipobotdbFile.delete()
     }
 }

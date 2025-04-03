@@ -15,8 +15,12 @@ import java.time.ZoneId
 import java.time.format.DateTimeParseException
 
 @Suppress("unused")
-class IPONewsBot(telegramClient: TelegramClient, botUsername: String, ipoService: IPOService) :
-    AbilityBot(telegramClient, botUsername) {
+class IPONewsBot(
+    telegramClient: TelegramClient,
+    botUsername: String,
+    ipoService: IPOService
+) : AbilityBot(telegramClient, botUsername) {
+
     private val logger = KotlinLogging.logger {}
     private val service: IPOService = ipoService
 
@@ -112,7 +116,7 @@ class IPONewsBot(telegramClient: TelegramClient, botUsername: String, ipoService
                         
                         - Rating: ${ipo.rating}
                         - Status: ${ipo.status}
-                        - GMP: ${if (ipo.gmp == -1) "No data" else ipo.gmp.toString() + "%"}
+                        - GMP: ${ipo.gmp.toString() + "%"}
                         - IPO Size: ${ipo.ipoSize}
                         - Open date: ${ipo.open}
                         - Close date: ${ipo.close}

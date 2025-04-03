@@ -13,7 +13,7 @@ object IPODataTable : IdTable<String>("ipodata") {
     val rating = varchar("rating", 100)
     val status = varchar("status", 100)
     val price = integer("price")
-    val gmp = integer("gmp")
+    val gmp = double("gmp")
     val estListing = varchar("estListing", 100)
     val ipoSize = varchar("ipoSize", 100)
     val lot = integer("lot")
@@ -47,7 +47,7 @@ data class IpoDto(
     val rating: String,
     val status: String,
     val price: Int,
-    val gmp: Int,
+    val gmp: Double,
     val estListing: String,
     val ipoSize: String,
     val lot: Int,

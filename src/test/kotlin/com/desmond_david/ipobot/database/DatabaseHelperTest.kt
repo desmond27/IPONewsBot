@@ -3,7 +3,6 @@ package com.desmond_david.ipobot.database
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import kotlin.test.assertEquals
@@ -13,6 +12,7 @@ class DatabaseHelperTest {
 
     @Test
     fun storeToDb() {
+        DatabaseHelper.initDb()
         transaction {
             DatabaseHelper.storeToDb(getTestIpoData())
         }
@@ -31,7 +31,7 @@ class DatabaseHelperTest {
                 "****",
                 "Upcoming",
                 100,
-                60,
+                60.5,
                 "estlisting-test",
                 "100 Cr",
                 1000,
@@ -43,11 +43,4 @@ class DatabaseHelperTest {
         )
     }
 
-    companion object {
-        @JvmStatic
-        @BeforeAll
-        fun initDatabase() {
-            DatabaseHelper.initDb()
-        }
-    }
 }
