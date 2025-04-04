@@ -12,7 +12,9 @@ class DatabaseHelperTest {
 
     @Test
     fun storeToDb() {
-        DatabaseHelper.initDb()
+
+        DatabaseHelper.initDb("jdbc:sqlite:ipobot-test.db")
+
         transaction {
             DatabaseHelper.storeToDb(getTestIpoData())
         }

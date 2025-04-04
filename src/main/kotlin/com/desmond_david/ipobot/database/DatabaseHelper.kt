@@ -21,8 +21,13 @@ val logger = KotlinLogging.logger {}
 private const val connectionString = "jdbc:sqlite:ipobot.db"
 
 object DatabaseHelper {
+
     fun initDb() {
-        logger.info { "Initializing database..." }
+        initDb(connectionString)
+    }
+
+    fun initDb(connectionString: String) {
+        logger.info { "Initializing database connection: $connectionString ..." }
 
         Database.connect(
             url = connectionString,
@@ -30,7 +35,7 @@ object DatabaseHelper {
         )
 
         transaction {
-            SchemaUtils.create(IPODataTable)
+            SchemaUtils.create(IPODataTable, ActiveGroupsTable)
         }
 
         logger.info { "Successfully initialized database." }

@@ -5,7 +5,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.upsert
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -15,7 +16,8 @@ class IPODataTableDaoTableTest {
     @Test
     @DisplayName("Initialize DB and create table.")
     fun dbMustInitializeAndTableMustBeCreated() {
-        DatabaseHelper.initDb()
+
+        DatabaseHelper.initDb("jdbc:sqlite:ipobot-test.db")
 
         transaction {
             IPODataTable.upsert {
@@ -54,7 +56,6 @@ class IPODataTableDaoTableTest {
         }
 
         // Delete the db file to avoid interfering with other tests.
-        val ipobotdbFile = File("./ipobot.db")
-        ipobotdbFile.delete()
+        Files.deleteIfExists(Paths.get("ipobot-test.db"))
     }
 }

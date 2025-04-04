@@ -80,6 +80,10 @@ class InvestorgainService : IPOService {
         return ipoDataList
     }
 
+    override fun getIpoClosingNext(): IpoDto? {
+        TODO("Not yet implemented")
+    }
+
 
     override fun getData(): List<IpoDto> {
         val ipoDataList = mutableListOf<IpoDto>()
