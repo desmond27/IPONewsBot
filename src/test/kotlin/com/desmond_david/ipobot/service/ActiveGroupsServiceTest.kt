@@ -18,8 +18,8 @@ class ActiveGroupsServiceTest {
     fun setUp() {
         transaction {
             SchemaUtils.create(ActiveGroupsTable)
-            ActiveGroupsDao.new { groupId = "123456" }
-            ActiveGroupsDao.new { groupId = "789012" }
+            ActiveGroupsDao.new { groupId = 123456L }
+            ActiveGroupsDao.new { groupId = 789012L }
         }
     }
 
@@ -32,18 +32,18 @@ class ActiveGroupsServiceTest {
 
     @Test
     fun isGroupAlreadyActive() {
-        var result = activeGroupsService.isGroupAlreadyActive("123456")
+        var result = activeGroupsService.isGroupAlreadyActive(123456L)
         assertTrue(result)
-        result = activeGroupsService.isGroupAlreadyActive("123457")
+        result = activeGroupsService.isGroupAlreadyActive(123457L)
         assertFalse(result)
     }
 
     @Test
     fun addToActiveGroups() {
-        activeGroupsService.addToActiveGroups("987654")
-        val group = transaction { ActiveGroupsDao.findById("987654")!! }
+        activeGroupsService.addToActiveGroups(987654L)
+        val group = transaction { ActiveGroupsDao.findById(987654L)!! }
         assertNotNull(group)
-        assertEquals("987654", group.groupId)
+        assertEquals(987654L, group.groupId)
     }
 
     @Test
@@ -52,6 +52,14 @@ class ActiveGroupsServiceTest {
         assertNotNull(groupIds)
         assertTrue(groupIds.isNotEmpty())
         assertEquals(2, groupIds.size)
+        assertIterableEquals(listOf(123456L, 789012L), groupIds)
+    }
+
+    @Test
+    fun removeFromActiveGroups() {
+        activeGroupsService.removeActiveGroup(123456L)
+        activeGroupsService.removeActiveGroup(789012L)
+        assertEquals(0, activeGroupsService.getAllActiveGroupIds().size)
     }
 
     companion object {

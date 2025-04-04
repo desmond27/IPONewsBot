@@ -6,14 +6,14 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 
-object ActiveGroupsTable: IdTable<String>("active_groups") {
-    val groupId = varchar("group_id", 32).uniqueIndex()
-    override val id: Column<EntityID<String>> = groupId.entityId()
+object ActiveGroupsTable: IdTable<Long>("active_groups") {
+    val groupId = long("group_id").uniqueIndex()
+    override val id: Column<EntityID<Long>> = groupId.entityId()
 }
 
-class ActiveGroupsDao(id: EntityID<String>) : Entity<String>(id) {
+class ActiveGroupsDao(id: EntityID<Long>) : Entity<Long>(id) {
 
-    companion object : EntityClass<String, ActiveGroupsDao>(ActiveGroupsTable)
+    companion object : EntityClass<Long, ActiveGroupsDao>(ActiveGroupsTable)
 
     var groupId by ActiveGroupsTable.groupId
 }
