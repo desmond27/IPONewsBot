@@ -40,7 +40,7 @@ class IPONewsBot(
             .action { ctx: MessageContext ->
                 val chatId = ctx.chatId()
                 logger.info { "Activating the bot for chat id: ${ctx.chatId()}" }
-                if(!activeGroupsService.isGroupAlreadyActive(chatId)) {
+                if (!activeGroupsService.isGroupAlreadyActive(chatId)) {
                     activeGroupsService.addToActiveGroups(chatId)
                     silent.send("Bot enabled for this group.", chatId)
                 } else {
@@ -60,11 +60,11 @@ class IPONewsBot(
             .action { ctx: MessageContext ->
                 val chatId = ctx.chatId()
                 logger.info { "Deactivating the bot for chat id: ${ctx.chatId()}" }
-                if(activeGroupsService.isGroupAlreadyActive(chatId)) {
+                if (activeGroupsService.isGroupAlreadyActive(chatId)) {
                     activeGroupsService.removeActiveGroup(chatId)
                     silent.send("Bot disabled for this group.", chatId)
                 } else {
-                    silent.send("Bot is already not enabled for this group.", chatId)
+                    silent.send("Bot is already disabled for this group.", chatId)
                 }
             }
             .build()
@@ -78,13 +78,11 @@ class IPONewsBot(
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx: MessageContext ->
-                if(canRun(ctx)) {
-                    logger.info { "Getting IPO details..." }
+                logger.info { "Getting IPO details..." }
 
-                    var ipoData = service.getData()
-                    ipoData = ipoData.subList(0, 5)
-                    silent.sendMd(convertIpoListToClosingTodayMessageBody(ipoData), ctx.chatId())
-                }
+                var ipoData = service.getData()
+                ipoData = ipoData.subList(0, 5)
+                silent.sendMd(convertIpoListToMessageBody(ipoData, null, true), ctx.chatId())
             }
             .build()
     }
@@ -97,11 +95,20 @@ class IPONewsBot(
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx: MessageContext ->
-                if(canRun(ctx)) {
+                if (canRun(ctx)) {
+
+                    // Refresh the IPO data
                     refreshIpoData(ctx)
+
+                    // Read IPOs closing today from the DB.
                     logger.info { "Getting IPOs closing today..." }
                     val ipoMessage =
-                        convertIpoListToClosingTodayMessageBody(service.getIposClosingOn(LocalDate.now(ZoneId.of("UTC+0530"))))
+                        convertIpoListToMessageBody(
+                            service.getIposClosingOn(LocalDate.now(ZoneId.of("UTC+0530"))),
+                            null
+                        )
+
+                    // Get all groups where this bot is active and send them all the message.
                     val activeGroupIds = activeGroupsService.getAllActiveGroupIds()
                     activeGroupIds.forEach {
                         silent.sendMd(ipoMessage, it)
@@ -122,11 +129,14 @@ class IPONewsBot(
                 logger.info { "Getting IPOs closing on...${ctx.firstArg()}" }
                 try {
                     silent.sendMd(
-                        convertIpoListToClosingTodayMessageBody(service.getIposClosingOn(LocalDate.parse(ctx.firstArg()))),
+                        convertIpoListToMessageBody(
+                            service.getIposClosingOn(LocalDate.parse(ctx.firstArg())),
+                            ctx.firstArg()
+                        ),
                         ctx.chatId()
                     )
                 } catch (e: DateTimeParseException) {
-                    logger.error(e) { "Could not parse the given date when getting IPOs." }
+                    logger.error(e) { "Could not parse the given date when getting IPOs ${ctx.firstArg()}." }
                     silent.send("Invalid date format. Enter a date in the format yyyy-MM-dd", ctx.chatId())
                 }
             }
@@ -141,7 +151,7 @@ class IPONewsBot(
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx: MessageContext ->
-                if(canRun(ctx)) {
+                if (canRun(ctx)) {
                     logger.info { "Refreshing IPO db." }
                     silent.send("Refreshing IPO data from ${service.getServiceName()}", ctx.chatId())
                     refreshIpoData(ctx)
@@ -162,27 +172,33 @@ class IPONewsBot(
             )
     }
 
-    private fun convertIpoListToClosingTodayMessageBody(ipoData: List<IpoDto>): String {
-        var message = ""
+    fun convertIpoListToMessageBody(
+        ipoData: List<IpoDto>,
+        date: String?,
+        includeClosingDate: Boolean = false
+    ): String {
+        var message = if (date == null) "IPO(s) closing today:\n" else "IPO(s) closing on $date\n"
         for (ipo in ipoData) {
-            val entry = """
-                        IPO(s) closing today:
-                        
+            var entry = """
                         *${ipo.ipo}*
                         
                         - Rating: ${ipo.rating}
                         - Status: ${ipo.status}
                         - GMP: ${ipo.gmp.toString() + "%"}
                     """.trimIndent()
+            if (includeClosingDate)
+                entry += "\n- Closing date: ${ipo.close}\n"
+            else
+                entry += "\n"
 
-            message += "$entry\n\n"
+            message += "\n$entry"
         }
 
         return message.ifEmpty { "No IPOs closing on this date." }
     }
 
     private fun canRun(ctx: MessageContext): Boolean {
-        if(ctx.chatId() != AppProperties.CONTROL_GROUP_CHAT_ID) {
+        if (ctx.chatId() != AppProperties.CONTROL_GROUP_CHAT_ID) {
             silent.send("This command can only be run from the control group.", ctx.chatId())
             return false
         }
