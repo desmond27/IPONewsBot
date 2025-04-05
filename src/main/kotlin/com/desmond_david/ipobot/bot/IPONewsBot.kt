@@ -178,6 +178,10 @@ class IPONewsBot(
         includeClosingDate: Boolean = false
     ): String {
         var message = if (date == null) "IPO(s) closing today:\n" else "IPO(s) closing on $date\n"
+
+        if(ipoData.isEmpty())
+            return "No IPOs closing on this date."
+
         for (ipo in ipoData) {
             var entry = """
                         *${ipo.ipo}*
@@ -194,7 +198,7 @@ class IPONewsBot(
             message += "\n$entry"
         }
 
-        return message.ifEmpty { "No IPOs closing on this date." }
+        return message
     }
 
     private fun canRun(ctx: MessageContext): Boolean {

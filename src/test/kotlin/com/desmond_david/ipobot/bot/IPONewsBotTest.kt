@@ -9,11 +9,21 @@ import org.mockito.Mockito
 import org.telegram.telegrambots.meta.generics.TelegramClient
 import java.time.LocalDate
 import java.util.stream.Stream
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class IPONewsBotTest {
 
-
+    @Test
+    fun sendDefaultMessageIfNoIposFound() {
+        val ipoNewsBot = IPONewsBot(
+            Mockito.mock(TelegramClient::class.java),
+            "test-username" + java.util.Random().nextInt().toString(),
+            Mockito.mock(InvestorgainService::class.java)
+        )
+        val messageBody = ipoNewsBot.convertIpoListToMessageBody(listOf(), null)
+        assertEquals("No IPOs closing on this date.", messageBody)
+    }
 
     @ParameterizedTest
     @MethodSource("testIpoData")
