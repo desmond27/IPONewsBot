@@ -82,7 +82,7 @@ class IPONewsBot(
 
                 var ipoData = service.getData()
                 ipoData = ipoData.subList(0, 5)
-                silent.sendMd(convertIpoListToMessageBody(ipoData, null, true), ctx.chatId())
+                silent.sendMd(getIpoListMessage(ipoData, true), ctx.chatId())
             }
             .build()
     }
@@ -175,30 +175,39 @@ class IPONewsBot(
     fun convertIpoListToMessageBody(
         ipoData: List<IpoDto>,
         date: String?,
-        includeClosingDate: Boolean = false
+        includeClosingDate: Boolean = false,
     ): String {
-        var message = if (date == null) "IPO(s) closing today:\n" else "IPO(s) closing on $date\n"
-
-        if(ipoData.isEmpty())
+        if (ipoData.isEmpty())
             return "No IPOs closing on this date."
 
+        var message = if (date == null) "IPO(s) closing today:\n" else "IPO(s) closing on $date\n"
+
+        message += getIpoListMessage(ipoData, includeClosingDate)
+
+        return message
+    }
+
+    fun getIpoListMessage(
+        ipoData: List<IpoDto>,
+        includeClosingDate: Boolean,
+    ): String {
+        var message1 = ""
         for (ipo in ipoData) {
             var entry = """
-                        *${ipo.ipo}*
-                        
-                        - Rating: ${ipo.rating}
-                        - Status: ${ipo.status}
-                        - GMP: ${ipo.gmp.toString() + "%"}
-                    """.trimIndent()
+                            *${ipo.ipo}*
+                            
+                            - Rating: ${ipo.rating}
+                            - Status: ${ipo.status}
+                            - GMP: ${ipo.gmp.toString() + "%"}
+                        """.trimIndent()
             if (includeClosingDate)
                 entry += "\n- Closing date: ${ipo.close}\n"
             else
                 entry += "\n"
 
-            message += "\n$entry"
+            message1 += "\n$entry"
         }
-
-        return message
+        return message1
     }
 
     private fun canRun(ctx: MessageContext): Boolean {
