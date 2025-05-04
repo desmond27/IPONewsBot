@@ -187,23 +187,23 @@ class IPONewsBot(
         return message
     }
 
-    fun getIpoListMessage(
+    private fun getIpoListMessage(
         ipoData: List<IpoDto>,
         includeClosingDate: Boolean,
     ): String {
         var message1 = ""
+        val estListRegex = "\\d*\\s\\((.+)\\)".toRegex()
         for (ipo in ipoData) {
+            val matchResult = estListRegex.find(ipo.estListing)
+            val gmpPercent = if(matchResult == null) "0%" else matchResult.groupValues[1]
             var entry = """
                             *${ipo.ipo}*
                             
                             - Rating: ${ipo.rating}
                             - Status: ${ipo.status}
-                            - GMP: ${ipo.gmp.toString() + "%"}
+                            - GMP: $gmpPercent
                         """.trimIndent()
-            if (includeClosingDate)
-                entry += "\n- Closing date: ${ipo.close}\n"
-            else
-                entry += "\n"
+            entry += if (includeClosingDate) "\n- Closing date: ${ipo.close}\n" else "\n"
 
             message1 += "\n$entry"
         }

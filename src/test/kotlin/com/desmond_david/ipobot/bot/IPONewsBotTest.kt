@@ -45,11 +45,11 @@ class IPONewsBotTest {
                 "Upcoming",
                 100,
                 60.5,
-                "estlisting-test",
+                "777 (15%)",
                 "100 Cr",
                 1000,
                 LocalDate.now(),
-                LocalDate.now(),
+                LocalDate.of(2025, 4, 5),
                 LocalDate.now(),
                 LocalDate.now()
             ),
@@ -59,11 +59,11 @@ class IPONewsBotTest {
                 "Open",
                 200,
                 65.5,
-                "estlisting-test",
+                "999 (10%)",
                 "200 Cr",
                 1500,
                 LocalDate.now(),
-                LocalDate.now(),
+                LocalDate.of(2025, 5, 4),
                 LocalDate.now(),
                 LocalDate.now()
             ),
@@ -82,15 +82,15 @@ class IPONewsBotTest {
 
                 - Rating: ****
                 - Status: Upcoming
-                - GMP: 60.5%
+                - GMP: 15%
                 - Closing date: 2025-04-05
 
                 *test-name-2*
 
                 - Rating: ***
                 - Status: Open
-                - GMP: 65.5%
-                - Closing date: 2025-04-05
+                - GMP: 10%
+                - Closing date: 2025-05-04
                 
             """.trimIndent()
             val messageBodyWithNoCloseDate = """
@@ -98,13 +98,13 @@ class IPONewsBotTest {
 
                 - Rating: ****
                 - Status: Upcoming
-                - GMP: 60.5%
+                - GMP: 15%
 
                 *test-name-2*
 
                 - Rating: ***
                 - Status: Open
-                - GMP: 65.5%
+                - GMP: 10%
 
             """.trimIndent()
 
