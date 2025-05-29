@@ -46,7 +46,7 @@ class InvestorgainService : IPOService {
                         Jsoup.parse(jsonEntry.getString("Fire Rating")).text(),
                         Jsoup.parse(jsonEntry.getString("Status")).text(),
                         price,
-                        if (gmpValue == "--") 0.0 else gmpValue.toDouble(),
+                        gmpValue,
                         Jsoup.parse(jsonEntry.getString("Est Listing")).text(),
                         Jsoup.parse(jsonEntry.getString("IPO Size")).text(),
                         lot,

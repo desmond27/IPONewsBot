@@ -24,6 +24,6 @@ class ActiveGroupsService {
     }
 
     fun removeActiveGroup(chatId: Long) {
-        return transaction { ActiveGroupsDao.findById(chatId)?.delete()}
+        return transaction { ActiveGroupsDao.findById(chatId)?.delete() }
     }
 }
