@@ -200,7 +200,7 @@ class IPONewsBot(
                             *${ipo.ipo}*
                             
                             - Rating: ${ipo.rating}
-                            - Status: ${ipo.status}
+                            - Sub: ${ipo.sub}
                             - GMP: $gmpPercent
                         """.trimIndent()
             entry += if (includeClosingDate) "\n- Closing date: ${ipo.close}\n" else "\n"

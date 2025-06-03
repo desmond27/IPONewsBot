@@ -10,7 +10,7 @@ import com.desmond_david.ipobot.database.IPODataTable.lot
 import com.desmond_david.ipobot.database.IPODataTable.open
 import com.desmond_david.ipobot.database.IPODataTable.price
 import com.desmond_david.ipobot.database.IPODataTable.rating
-import com.desmond_david.ipobot.database.IPODataTable.status
+import com.desmond_david.ipobot.database.IPODataTable.sub
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -47,7 +47,7 @@ object DatabaseHelper {
             IPODataTable.batchUpsert(data = data, IPODataTable.id) { dto ->
                 this[ipo] = dto.ipo
                 this[rating] = dto.rating
-                this[status] = dto.status
+                this[sub] = dto.sub
                 this[price] = dto.price
                 this[gmp] = dto.gmp
                 this[estListing] = dto.estListing

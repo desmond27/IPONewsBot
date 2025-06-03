@@ -11,7 +11,7 @@ import java.time.LocalDate
 object IPODataTable : IdTable<String>("ipodata") {
     val ipo  = varchar("ipo", 100).uniqueIndex()
     val rating = varchar("rating", 100)
-    val status = varchar("status", 100)
+    val sub = varchar("sub", 100)
     val price = integer("price")
     val gmp = varchar("gmp", 100)
     val estListing = varchar("estListing", 100)
@@ -30,7 +30,7 @@ class IPODataTableDao(id: EntityID<String>) : Entity<String>(id) {
 
     var ipo by IPODataTable.ipo
     var rating by IPODataTable.rating
-    var status by IPODataTable.status
+    var status by IPODataTable.sub
     var price by IPODataTable.price
     var gmp by IPODataTable.gmp
     var estListing by IPODataTable.estListing
@@ -45,7 +45,7 @@ class IPODataTableDao(id: EntityID<String>) : Entity<String>(id) {
 data class IpoDto(
     val ipo: String,
     val rating: String,
-    val status: String,
+    val sub: String,
     val price: Int,
     val gmp: String,
     val estListing: String,

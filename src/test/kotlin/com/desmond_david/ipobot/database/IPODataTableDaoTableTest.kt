@@ -23,7 +23,7 @@ class IPODataTableDaoTableTest {
             IPODataTable.upsert {
                 it[ipo] = "IPO name"
                 it[rating] = "IPO rating"
-                it[status] = "status"
+                it[sub] = "10x"
                 it[price] = 100
                 it[gmp] = "63.5"
                 it[estListing] = "est. listing"
@@ -39,7 +39,7 @@ class IPODataTableDaoTableTest {
             assertNotNull(ipoEntry)
             assertEquals("IPO name", ipoEntry.ipo)
             assertEquals("IPO rating", ipoEntry.rating)
-            assertEquals("status", ipoEntry.status)
+            assertEquals("10x", ipoEntry.status)
             assertEquals(100, ipoEntry.price)
             assertEquals("63.5", ipoEntry.gmp)
             assertEquals("est. listing", ipoEntry.estListing)

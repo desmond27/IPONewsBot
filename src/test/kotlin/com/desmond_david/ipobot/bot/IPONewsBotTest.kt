@@ -81,14 +81,14 @@ class IPONewsBotTest {
                 *test-name*
 
                 - Rating: ****
-                - Status: Upcoming
+                - Sub: Upcoming
                 - GMP: 15%
                 - Closing date: 2025-04-05
 
                 *test-name-2*
 
                 - Rating: ***
-                - Status: Open
+                - Sub: Open
                 - GMP: 10%
                 - Closing date: 2025-05-04
                 
@@ -97,13 +97,13 @@ class IPONewsBotTest {
                 *test-name*
 
                 - Rating: ****
-                - Status: Upcoming
+                - Sub: Upcoming
                 - GMP: 15%
 
                 *test-name-2*
 
                 - Rating: ***
-                - Status: Open
+                - Sub: Open
                 - GMP: 10%
 
             """.trimIndent()

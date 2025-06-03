@@ -42,9 +42,9 @@ class InvestorgainService : IPOService {
 
                 ipoDataList.add(
                     IpoDto(
-                        jsonEntry.getString("IPO"),
+                        Jsoup.parse(jsonEntry.getString("Name")).text().substringBeforeLast(" "),
                         Jsoup.parse(jsonEntry.getString("Fire Rating")).text(),
-                        Jsoup.parse(jsonEntry.getString("Status")).text(),
+                        Jsoup.parse(jsonEntry.getString("Sub")).text(),
                         price,
                         gmpValue,
                         Jsoup.parse(jsonEntry.getString("Est Listing")).text(),
@@ -109,7 +109,7 @@ class InvestorgainService : IPOService {
                 lot = it.lot,
                 gmp = it.gmp,
                 price = it.price,
-                status = it.status,
+                sub = it.status,
                 ipoSize = it.ipoSize,
                 rating = it.rating,
                 boaDate = it.boaDate,
