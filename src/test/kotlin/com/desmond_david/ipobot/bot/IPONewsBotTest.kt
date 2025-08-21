@@ -45,13 +45,13 @@ class IPONewsBotTest {
                 "Upcoming",
                 100,
                 "60.5",
-                "777 (15%)",
-                "100 Cr",
+                "100",
                 1000,
                 LocalDate.now(),
                 LocalDate.of(2025, 4, 5),
                 LocalDate.now(),
-                LocalDate.now()
+                LocalDate.now(),
+                "10.00"
             ),
             IpoDto(
                 "test-name-2",
@@ -59,13 +59,13 @@ class IPONewsBotTest {
                 "Open",
                 200,
                 "65.5",
-                "999 (10%)",
-                "200 Cr",
+                "200",
                 1500,
                 LocalDate.now(),
                 LocalDate.of(2025, 5, 4),
                 LocalDate.now(),
-                LocalDate.now()
+                LocalDate.now(),
+                "15.00"
             ),
         )
     }
@@ -82,14 +82,14 @@ class IPONewsBotTest {
 
                 - Rating: ****
                 - Sub: Upcoming
-                - GMP: 15%
+                - GMP: 10.00%
                 - Closing date: 2025-04-05
 
                 *test-name-2*
 
                 - Rating: ***
                 - Sub: Open
-                - GMP: 10%
+                - GMP: 15.00%
                 - Closing date: 2025-05-04
                 
             """.trimIndent()
@@ -98,13 +98,13 @@ class IPONewsBotTest {
 
                 - Rating: ****
                 - Sub: Upcoming
-                - GMP: 15%
+                - GMP: 10.00%
 
                 *test-name-2*
 
                 - Rating: ***
                 - Sub: Open
-                - GMP: 10%
+                - GMP: 15.00%
 
             """.trimIndent()
 

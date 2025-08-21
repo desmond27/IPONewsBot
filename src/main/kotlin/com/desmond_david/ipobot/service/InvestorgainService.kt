@@ -31,34 +31,9 @@ class InvestorgainService : IPOService {
             val reportTableDataJsonArray = responseJsonObject.get("reportTableData") as JSONArray
             for (entry in reportTableDataJsonArray) {
                 logger.debug { "Reading entry: $entry" }
-                val jsonEntry = entry as JSONObject
-                val gmpValue = Jsoup.parse(jsonEntry.getString("GMP")).text()
-
-                val price = if(jsonEntry.getString("Price") == "NA" || jsonEntry.getString("Price") == "") -1
-                else jsonEntry.getInt("Price")
-
-                val lot = if(jsonEntry.getString("Lot") == "TBD" || jsonEntry.getString("Lot").isEmpty()) -1
-                else jsonEntry.getString("Lot").toInt()
 
                 ipoDataList.add(
-                    IpoDto(
-                        Jsoup.parse(jsonEntry.getString("Name")).text().substringBeforeLast(" "),
-                        Jsoup.parse(jsonEntry.getString("Fire Rating")).text(),
-                        Jsoup.parse(jsonEntry.getString("Sub")).text(),
-                        price,
-                        gmpValue,
-                        Jsoup.parse(jsonEntry.getString("Est Listing")).text(),
-                        Jsoup.parse(jsonEntry.getString("IPO Size")).text(),
-                        lot,
-                        if(jsonEntry.getString("~Srt_Open").isEmpty()) null
-                        else LocalDate.parse(jsonEntry.getString("~Srt_Open")),
-                        if(jsonEntry.getString("~Srt_Close").isEmpty()) null
-                        else LocalDate.parse(jsonEntry.getString("~Srt_Close")),
-                        if(jsonEntry.getString("~Srt_BoA_Dt").isEmpty()) null
-                        else LocalDate.parse(jsonEntry.getString("~Srt_BoA_Dt")),
-                        if(jsonEntry.getString("~Str_Listing").isEmpty()) null
-                        else LocalDate.parse(jsonEntry.getString("~Str_Listing")),
-                    )
+                    InvestorgainResponseMapper().mapToDto(entry as JSONObject)
                 )
             }
             DatabaseHelper.storeToDb(ipoDataList)
@@ -73,7 +48,7 @@ class InvestorgainService : IPOService {
     override fun getIposClosingOn(localDate: LocalDate): List<IpoDto> {
         val ipoDataList = mutableListOf<IpoDto>()
         transaction {
-           IPODataTableDao.find { close eq localDate }.forEach {
+            IPODataTableDao.find { close eq localDate }.forEach {
                 makeIpoDto(ipoDataList, it)
             }
         }
@@ -105,7 +80,6 @@ class InvestorgainService : IPOService {
                 ipo = it.ipo,
                 open = it.open,
                 close = it.close,
-                estListing = it.estListing,
                 lot = it.lot,
                 gmp = it.gmp,
                 price = it.price,
@@ -114,7 +88,65 @@ class InvestorgainService : IPOService {
                 rating = it.rating,
                 boaDate = it.boaDate,
                 listing = it.listing,
+                gmpPercent = it.gmpPercent
             )
+        )
+    }
+}
+
+class InvestorgainResponseMapper {
+
+    fun mapToDto(json: JSONObject): IpoDto {
+        fun parseHtml(value: String?): String =
+            if (value.isNullOrBlank()) "" else Jsoup.parse(value).text()
+
+        fun parseIntOrDefault(raw: String?, default: Int = -1): Int {
+            if (raw.isNullOrBlank()) return default
+            val cleaned = raw.filter { it.isDigit() }
+            return cleaned.toIntOrNull() ?: default
+        }
+
+        fun parseDate(key: String): LocalDate? {
+            val v = json.optString(key)
+            return if (v.isNullOrBlank()) null else LocalDate.parse(v)
+        }
+
+        val nameFromHtml = parseHtml(json.optString("Name")).substringBeforeLast(" ").trim()
+        val fallbackName = parseHtml(json.optString("~ipo_name"))
+        val ipoName = if (nameFromHtml.isNotBlank()) nameFromHtml else fallbackName
+
+        val rating = parseHtml(json.optString("Fire Rating"))
+        val sub = parseHtml(json.optString("Sub"))
+
+        val priceRaw = json.optString("Price")
+        val price = if (priceRaw.equals("NA", ignoreCase = true)) -1 else parseIntOrDefault(priceRaw, -1)
+
+        val gmp = parseHtml(json.optString("GMP"))
+        val ipoSize = parseHtml(json.optString("IPO Size"))
+
+        val lotRaw = json.optString("Lot")
+        val lot = if (lotRaw.equals("TBD", ignoreCase = true)) -1 else parseIntOrDefault(lotRaw, -1)
+
+        val open = parseDate("~Srt_Open")
+        val close = parseDate("~Srt_Close")
+        val boaDate = parseDate("~Srt_BoA_Dt")
+        val listing = parseDate("~Str_Listing")
+
+        val gmpPercent = json.optString("~gmp_percent_calc").takeIf { it.isNotBlank() }
+
+        return IpoDto(
+            ipo = ipoName,
+            rating = rating,
+            sub = sub,
+            price = price,
+            gmp = gmp,
+            ipoSize = ipoSize,
+            lot = lot,
+            open = open,
+            close = close,
+            boaDate = boaDate,
+            listing = listing,
+            gmpPercent = gmpPercent
         )
     }
 }
