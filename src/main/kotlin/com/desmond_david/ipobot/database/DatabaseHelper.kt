@@ -1,8 +1,8 @@
 package com.desmond_david.ipobot.database
 
 import com.desmond_david.ipobot.database.IPODataTable.boaDate
-import com.desmond_david.ipobot.database.IPODataTable.estListing
 import com.desmond_david.ipobot.database.IPODataTable.gmp
+import com.desmond_david.ipobot.database.IPODataTable.gmpPercent
 import com.desmond_david.ipobot.database.IPODataTable.ipo
 import com.desmond_david.ipobot.database.IPODataTable.ipoSize
 import com.desmond_david.ipobot.database.IPODataTable.listing
@@ -50,13 +50,13 @@ object DatabaseHelper {
                 this[sub] = dto.sub
                 this[price] = dto.price
                 this[gmp] = dto.gmp
-                this[estListing] = dto.estListing
                 this[ipoSize] = dto.ipoSize
                 this[lot] = dto.lot
                 this[open] = dto.open
                 this[IPODataTable.close] = dto.close
                 this[boaDate] = dto.boaDate
                 this[listing] = dto.listing
+                this[gmpPercent] = dto.gmpPercent
             }
         }
         logger.info { "Successfully stored ${data.size} IPO data" }

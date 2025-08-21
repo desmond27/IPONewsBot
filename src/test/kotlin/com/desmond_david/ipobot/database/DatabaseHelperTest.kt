@@ -34,13 +34,13 @@ class DatabaseHelperTest {
                 "Upcoming",
                 100,
                 "60.5",
-                "estlisting-test",
                 "100 Cr",
                 1000,
                 LocalDate.now(),
                 LocalDate.now(),
                 LocalDate.now(),
-                LocalDate.now()
+                LocalDate.now(),
+                "10.00"
             ),
         )
     }

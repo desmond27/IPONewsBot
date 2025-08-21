@@ -192,10 +192,8 @@ class IPONewsBot(
         includeClosingDate: Boolean,
     ): String {
         var message1 = ""
-        val estListRegex = "\\d*\\s\\((.+)\\)".toRegex()
         for (ipo in ipoData) {
-            val matchResult = estListRegex.find(ipo.estListing)
-            val gmpPercent = if(matchResult == null) "0%" else matchResult.groupValues[1]
+            val gmpPercent = ipo.gmpPercent?.let { "$it%" } ?: "0.00%"
             var entry = """
                             *${ipo.ipo}*
                             

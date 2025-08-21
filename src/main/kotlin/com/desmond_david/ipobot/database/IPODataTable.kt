@@ -14,13 +14,13 @@ object IPODataTable : IdTable<String>("ipodata") {
     val sub = varchar("sub", 100)
     val price = integer("price")
     val gmp = varchar("gmp", 100)
-    val estListing = varchar("estListing", 100)
     val ipoSize = varchar("ipoSize", 100)
     val lot = integer("lot")
     val open = date("open").nullable()
     val close = date("close").nullable()
     val boaDate = date("boaDate").nullable()
     val listing = date("listing").nullable()
+    val gmpPercent = varchar("gmpPercent", 100).nullable()
     override val id: Column<EntityID<String>> = ipo.entityId()
 }
 
@@ -33,13 +33,13 @@ class IPODataTableDao(id: EntityID<String>) : Entity<String>(id) {
     var status by IPODataTable.sub
     var price by IPODataTable.price
     var gmp by IPODataTable.gmp
-    var estListing by IPODataTable.estListing
     var ipoSize by IPODataTable.ipoSize
     var lot by IPODataTable.lot
     var open by IPODataTable.open
     var close by IPODataTable.close
     var boaDate by IPODataTable.boaDate
     var listing by IPODataTable.listing
+    var gmpPercent by IPODataTable.gmpPercent
 }
 
 data class IpoDto(
@@ -48,11 +48,11 @@ data class IpoDto(
     val sub: String,
     val price: Int,
     val gmp: String,
-    val estListing: String,
     val ipoSize: String,
     val lot: Int,
     val open: LocalDate?,
     val close: LocalDate?,
     val boaDate: LocalDate?,
     val listing: LocalDate?,
+    val gmpPercent: String? = null,
 )
