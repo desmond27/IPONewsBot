@@ -1,5 +1,6 @@
 package com.desmond_david.ipobot
 
+import com.desmond_david.ipobot.bot.ClosingTodayTimerTask
 import com.desmond_david.ipobot.bot.IPONewsBot
 import com.desmond_david.ipobot.database.DatabaseHelper
 import com.desmond_david.ipobot.service.InvestorgainService
@@ -21,6 +22,10 @@ fun main() {
         val botsApplication = TelegramBotsLongPollingApplication()
         val telegramClient = OkHttpTelegramClient(AppProperties.BOT_TOKEN)
         val ipoNewsBot = IPONewsBot(telegramClient, AppProperties.BOT_USERNAME, ipoService)
+
+        logger.info { "Initializing timer to run at ${AppProperties.DAILY_ALERT_TIME} ${AppProperties.DAILY_ALERT_TIMEZONE}" }
+        Scheduler.initScheduler(ClosingTodayTimerTask(ipoNewsBot))
+
         ipoNewsBot.onRegister()
         botsApplication.registerBot(AppProperties.BOT_TOKEN, ipoNewsBot)
 
