@@ -100,22 +100,26 @@ class IPONewsBot(
                     // Refresh the IPO data
                     refreshIpoData(ctx)
 
-                    // Read IPOs closing today from the DB.
-                    logger.info { "Getting IPOs closing today..." }
-                    val ipoMessage =
-                        convertIpoListToMessageBody(
-                            service.getIposClosingOn(LocalDate.now(ZoneId.of("UTC+0530"))),
-                            null
-                        )
-
-                    // Get all groups where this bot is active and send them all the message.
-                    val activeGroupIds = activeGroupsService.getAllActiveGroupIds()
-                    activeGroupIds.forEach {
-                        silent.sendMd(ipoMessage, it)
-                    }
+                    sendTodaysClosingIPOInfo()
                 }
             }
             .build()
+    }
+
+    fun sendTodaysClosingIPOInfo() {
+        // Read IPOs closing today from the DB.
+        logger.info { "Getting IPOs closing today..." }
+        val ipoMessage =
+            convertIpoListToMessageBody(
+                service.getIposClosingOn(LocalDate.now(ZoneId.of("UTC+0530"))),
+                null
+            )
+
+        // Get all groups where this bot is active and send them all the message.
+        val activeGroupIds = activeGroupsService.getAllActiveGroupIds()
+        activeGroupIds.forEach {
+            silent.sendMd(ipoMessage, it)
+        }
     }
 
     fun getGetIposClosingOn(): Ability {
@@ -160,15 +164,18 @@ class IPONewsBot(
             .build()
     }
 
-    private fun refreshIpoData(ctx: MessageContext) {
+    fun refreshIpoData(ctx: MessageContext?) {
         val result = service.saveData()
 
         if (result != null)
-            silent.send("IPO data refreshed successfully from ${service.getServiceName()}", ctx.chatId())
+            silent.send(
+                "IPO data refreshed successfully from ${service.getServiceName()}",
+                ctx?.chatId() ?: AppProperties.CONTROL_GROUP_CHAT_ID
+            )
         else
             silent.send(
                 "Could not refresh IPO data from ${service.getServiceName()}. Check logs for errors.",
-                ctx.chatId()
+                ctx?.chatId() ?: AppProperties.CONTROL_GROUP_CHAT_ID
             )
     }
 
