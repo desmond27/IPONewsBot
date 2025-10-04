@@ -19,7 +19,7 @@ class InvestorgainResponseMapperTest {
               "~orderby1": 5500,
               "Name": "<a href=\"/gmp/\" title=\"Test One IPO\" target=\"_parent\">Test One IPO</a> <span class=\"badge rounded-pill bg-warning d-inline ms-2\" >U</span>",
               "GMP": "&#8377;<b>21</b> (21.65%)<br><small style=\"font-size: 12px; color: #007BFF;\"><b>21-Aug 23:34</b></small>",
-              "Fire Rating": "<span style='font-size: 12px;'>&#128293;&#128293;&#128293;&#128293;</span>",
+              "Rating": "<span style='font-size: 12px;'>&#128293;&#128293;&#128293;&#128293;</span>",
               "Sub": "",
               "Price": "97",
               "IPO Size": "&#8377;772.00 Cr",

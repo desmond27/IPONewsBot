@@ -113,9 +113,9 @@ class InvestorgainResponseMapper {
 
         val nameFromHtml = parseHtml(json.optString("Name")).substringBeforeLast(" ").trim()
         val fallbackName = parseHtml(json.optString("~ipo_name"))
-        val ipoName = if (nameFromHtml.isNotBlank()) nameFromHtml else fallbackName
+        val ipoName = nameFromHtml.ifBlank { fallbackName }
 
-        val rating = parseHtml(json.optString("Fire Rating"))
+        val rating = parseHtml(json.optString("Rating"))
         val sub = parseHtml(json.optString("Sub"))
 
         val priceRaw = json.optString("Price")
