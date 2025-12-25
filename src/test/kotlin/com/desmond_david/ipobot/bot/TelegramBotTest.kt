@@ -1,5 +1,6 @@
 package com.desmond_david.ipobot.bot
 
+import com.desmond_david.ipobot.bot.telegram.TelegramBot
 import com.desmond_david.ipobot.database.IpoDto
 import com.desmond_david.ipobot.service.InvestorgainService
 import org.junit.jupiter.params.ParameterizedTest
@@ -8,32 +9,33 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.Mockito
 import org.telegram.telegrambots.meta.generics.TelegramClient
 import java.time.LocalDate
+import java.util.Random
 import java.util.stream.Stream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class IPONewsBotTest {
+class TelegramBotTest {
 
     @Test
     fun sendDefaultMessageIfNoIposFound() {
-        val ipoNewsBot = IPONewsBot(
+        val telegramBot = TelegramBot(
             Mockito.mock(TelegramClient::class.java),
-            "test-username" + java.util.Random().nextInt().toString(),
+            "test-username" + Random().nextInt().toString(),
             Mockito.mock(InvestorgainService::class.java)
         )
-        val messageBody = ipoNewsBot.convertIpoListToMessageBody(listOf(), null)
+        val messageBody = telegramBot.convertIpoListToMessageBody(listOf(), null)
         assertEquals("No IPOs closing on this date.", messageBody)
     }
 
     @ParameterizedTest
     @MethodSource("testIpoData")
     fun convertIpoListToMessageBody(date: String?, includeClosingDate: Boolean, expectedMessage: String) {
-        val ipoNewsBot = IPONewsBot(
+        val telegramBot = TelegramBot(
             Mockito.mock(TelegramClient::class.java),
-            "test-username" + java.util.Random().nextInt().toString(),
+            "test-username" + Random().nextInt().toString(),
             Mockito.mock(InvestorgainService::class.java)
         )
-        val messageBody = ipoNewsBot.convertIpoListToMessageBody(getTestIpoData(), date, includeClosingDate)
+        val messageBody = telegramBot.convertIpoListToMessageBody(getTestIpoData(), date, includeClosingDate)
         assertEquals(expectedMessage, messageBody)
     }
 

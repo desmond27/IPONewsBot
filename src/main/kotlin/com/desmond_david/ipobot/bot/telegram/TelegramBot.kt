@@ -1,6 +1,7 @@
-package com.desmond_david.ipobot.bot
+package com.desmond_david.ipobot.bot.telegram
 
 import com.desmond_david.ipobot.AppProperties
+import com.desmond_david.ipobot.bot.IPOBot
 import com.desmond_david.ipobot.database.IpoDto
 import com.desmond_david.ipobot.service.ActiveGroupsService
 import com.desmond_david.ipobot.service.IPOService
@@ -16,11 +17,11 @@ import java.time.ZoneId
 import java.time.format.DateTimeParseException
 
 @Suppress("unused")
-class IPONewsBot(
+class TelegramBot(
     telegramClient: TelegramClient,
     botUsername: String,
     ipoService: IPOService
-) : AbilityBot(telegramClient, botUsername) {
+) : AbilityBot(telegramClient, botUsername), IPOBot {
 
     private val logger = KotlinLogging.logger {}
     private val service: IPOService = ipoService
@@ -106,8 +107,8 @@ class IPONewsBot(
             .build()
     }
 
-    fun sendTodaysClosingIPOInfo() {
-        // Read IPOs closing today from the DB.
+    override fun sendTodaysClosingIPOInfo() {
+        // Read IPOs closing today from the DB. IPO data is expected to be refereshed by this point.
         logger.info { "Getting IPOs closing today..." }
         val ipoMessage =
             convertIpoListToMessageBody(
