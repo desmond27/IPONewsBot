@@ -9,7 +9,6 @@ import com.desmond_david.ipobot.service.InvestorgainService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 private val logger = KotlinLogging.logger {}
 
@@ -29,7 +28,7 @@ fun main() {
 
         BotRegistry.registerBot("telegram", initTelegramBot(ipoService))
 
-    } catch (e: TelegramApiException) {
+    } catch (e: Exception) {
         logger.error(e) { "An exception occurred while initializing the bot." }
     }
 }
