@@ -41,8 +41,8 @@ class TelegramBot(
             .action { ctx: MessageContext ->
                 val chatId = ctx.chatId()
                 logger.info { "Activating the bot for chat id: ${ctx.chatId()}" }
-                if (!activeGroupsService.isGroupAlreadyActive(chatId)) {
-                    activeGroupsService.addToActiveGroups(chatId)
+                if (!activeGroupsService.isGroupAlreadyActive(chatId.toString())) {
+                    activeGroupsService.addToActiveGroups(chatId.toString(), "telegram")
                     silent.send("Bot enabled for this group.", chatId)
                 } else {
                     silent.send("Bot is already enabled for this group.", chatId)
@@ -54,15 +54,15 @@ class TelegramBot(
     fun stopBot(): Ability {
         return Ability.builder()
             .name("stop")
-            .info("Disables the current chat from receive messages from this bot")
+            .info("Disables the current chat from receiving messages from this bot")
             .input(0)
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx: MessageContext ->
                 val chatId = ctx.chatId()
                 logger.info { "Deactivating the bot for chat id: ${ctx.chatId()}" }
-                if (activeGroupsService.isGroupAlreadyActive(chatId)) {
-                    activeGroupsService.removeActiveGroup(chatId)
+                if (activeGroupsService.isGroupAlreadyActive(chatId.toString())) {
+                    activeGroupsService.removeActiveGroup(chatId.toString())
                     silent.send("Bot disabled for this group.", chatId)
                 } else {
                     silent.send("Bot is already disabled for this group.", chatId)
@@ -117,9 +117,9 @@ class TelegramBot(
             )
 
         // Get all groups where this bot is active and send them all the message.
-        val activeGroupIds = activeGroupsService.getAllActiveGroupIds()
+        val activeGroupIds = activeGroupsService.getAllActiveGroupIds("telegram")
         activeGroupIds.forEach {
-            silent.sendMd(ipoMessage, it)
+            silent.sendMd(ipoMessage, it.toLong())
         }
     }
 
