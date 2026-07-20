@@ -29,3 +29,7 @@ After setting the appropriate properties, ensure that you have a compatible Java
 ## Note on control groups
 
 If you want to host this bot yourself on your own server, you will need to create a separate group in Telegram as a control group. This group will be used for higher-level admin operations. Currently only the `/refresh` operation is available that can only be executed in the control group. You must configure the control group chat id against the `CONTROL_GROUP_CHAT_ID` property in [ipobot.properties](https://github.com/desmond27/IPONewsBot/blob/main/src/main/resources/ipobot.properties).
+
+## Acknowledgements
+
+This project uses [TelegramBots](https://github.com/rubenlagus/TelegramBots)
