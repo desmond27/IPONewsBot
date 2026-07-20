@@ -15,7 +15,6 @@ To avoid too much load on the server, the below commands can only be run by admi
 |---|---|
 |/start|Enable the bot in your chat.|
 |/stop|Disable the bot in your chat.|
-|/stop|Disable the bot in your chat.|
 |/getipos|Get top 5 latest listed IPOs.|
 |/closingtoday|Get a list of IPOs closing today, if any.|
 |/closingon yyyy-MM-dd|Get the IPOs closing on the given date in yyyy-MM-dd format (ex. 2026-07-21).|
