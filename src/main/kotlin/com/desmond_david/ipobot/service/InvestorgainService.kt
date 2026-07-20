@@ -13,7 +13,7 @@ import org.jsoup.Jsoup
 import java.time.LocalDate
 
 private const val SERVICE_NAME = "Investorgain"
-private const val SERVICE_URL = "https://webnodejs.investorgain.com/cloud/report/data-read/331/1/2/2025/2024-25/0/all"
+private const val SERVICE_URL = "https://webnodejs.investorgain.com/cloud/v2/report/data-read/331/1/2/2025/2024-25/0/all"
 
 class InvestorgainService : IPOService {
     private val logger = KotlinLogging.logger {}
