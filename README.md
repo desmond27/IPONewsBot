@@ -20,7 +20,7 @@ To avoid too much load on the server, the below commands can only be run by admi
 |/closingon yyyy-MM-dd|Get the IPOs closing on the given date in yyyy-MM-dd format (ex. 2026-07-21).|
 |/refresh|Updates the latest IPO details in the server db. Can only be run from the control group.|
 
-# Building
+## Building
 
 Edit the [ipobot.properties](https://github.com/desmond27/IPONewsBot/blob/main/src/main/resources/ipobot.properties) file and add the required details. You may need to create your own bot using [@Botfather](https://t.me/Botfather) to obtain the bot token and bot username. The bot creator id is your Telegram id (not handle) this can be obtained from [@userinfobot](https://t.me/userinfobot).
 
