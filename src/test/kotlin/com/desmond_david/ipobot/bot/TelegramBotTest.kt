@@ -2,6 +2,7 @@ package com.desmond_david.ipobot.bot
 
 import com.desmond_david.ipobot.bot.telegram.TelegramBot
 import com.desmond_david.ipobot.database.IpoDto
+import com.desmond_david.ipobot.service.ActiveGroupsService
 import com.desmond_david.ipobot.service.InvestorgainService
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -21,7 +22,8 @@ class TelegramBotTest {
         val telegramBot = TelegramBot(
             Mockito.mock(TelegramClient::class.java),
             "test-username" + Random().nextInt().toString(),
-            Mockito.mock(InvestorgainService::class.java)
+            Mockito.mock(InvestorgainService::class.java),
+            Mockito.mock(ActiveGroupsService::class.java),
         )
         val messageBody = telegramBot.convertIpoListToMessageBody(listOf(), null)
         assertEquals("No IPOs closing on this date.", messageBody)
@@ -33,7 +35,8 @@ class TelegramBotTest {
         val telegramBot = TelegramBot(
             Mockito.mock(TelegramClient::class.java),
             "test-username" + Random().nextInt().toString(),
-            Mockito.mock(InvestorgainService::class.java)
+            Mockito.mock(InvestorgainService::class.java),
+            Mockito.mock(ActiveGroupsService::class.java),
         )
         val messageBody = telegramBot.convertIpoListToMessageBody(getTestIpoData(), date, includeClosingDate)
         assertEquals(expectedMessage, messageBody)

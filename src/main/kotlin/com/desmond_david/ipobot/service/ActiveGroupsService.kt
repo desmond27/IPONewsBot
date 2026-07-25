@@ -2,19 +2,33 @@ package com.desmond_david.ipobot.service
 
 import com.desmond_david.ipobot.database.ActiveGroupsDao
 import com.desmond_david.ipobot.database.ActiveGroupsTable
+import com.desmond_david.ipobot.database.ActiveGroupsTable.groupId
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import com.desmond_david.ipobot.database.ActiveGroupsTable.botName as botName1
 
 class ActiveGroupsService {
+
+    val logger = KotlinLogging.logger {}
 
     /**
      * Check if a group is already active by its chat ID.
      */
-    fun isGroupAlreadyActive(chatId: String): Boolean {
+    fun isGroupAlreadyActive(chatId: String, botName: String): Boolean {
         var foundId: String? = null
         transaction {
-            foundId = ActiveGroupsDao.findById(chatId)?.groupId
+            try {
+                val foundEntry = ActiveGroupsTable.selectAll()
+                    .where { (groupId eq chatId) and (botName1 eq botName) }
+                    .single()
+                foundId = foundEntry[groupId]
+            } catch (_: NoSuchElementException) {
+                logger.debug{ "Group $chatId is not active." }
+            }
         }
-        return foundId != null
+        return foundId?.isNotEmpty() ?: false
     }
 
     /**
@@ -34,7 +48,7 @@ class ActiveGroupsService {
      */
     fun getAllActiveGroupIds(botName: String): List<String> {
         return transaction {
-            ActiveGroupsDao.find { ActiveGroupsTable.botName eq botName }.map { it.groupId }
+            ActiveGroupsDao.find { botName1 eq botName }.map { it.groupId }
         }
     }
 

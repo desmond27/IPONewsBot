@@ -4,6 +4,7 @@ import com.desmond_david.ipobot.bot.BotRegistry
 import com.desmond_david.ipobot.bot.ClosingTodayTimerTask
 import com.desmond_david.ipobot.bot.telegram.TelegramBot
 import com.desmond_david.ipobot.database.DatabaseHelper
+import com.desmond_david.ipobot.service.ActiveGroupsService
 import com.desmond_david.ipobot.service.IPOService
 import com.desmond_david.ipobot.service.InvestorgainService
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -16,32 +17,33 @@ fun main() {
     logger.info { "Starting IPONewsBot..." }
 
     try {
-        // Initialize IPO Service
-        val ipoService = InvestorgainService()
-
         // Initialize db
         DatabaseHelper.initDb()
+
+        // Initialize services
+        val ipoService = InvestorgainService()
+        val activeGroupsService = ActiveGroupsService()
 
         // Initialize a scheduled timer task
         logger.info { "Initializing timer to run at ${AppProperties.DAILY_ALERT_TIME} ${AppProperties.DAILY_ALERT_TIMEZONE}" }
         Scheduler.initScheduler(ClosingTodayTimerTask(ipoService))
 
-        BotRegistry.registerBot("telegram", initTelegramBot(ipoService))
+        if(AppProperties.TELEGRAM_ENABLED)
+            BotRegistry.registerBot(initTelegramBot(ipoService, activeGroupsService))
 
     } catch (e: Exception) {
         logger.error(e) { "An exception occurred while initializing the bot." }
     }
 }
 
-fun initTelegramBot(ipoService: IPOService): TelegramBot {
+fun initTelegramBot(ipoService: IPOService, activeGroupsService: ActiveGroupsService): TelegramBot {
 
     val botApplication = TelegramBotsLongPollingApplication()
-    val telegramClient = OkHttpTelegramClient(AppProperties.BOT_TOKEN)
-    val telegramBot = TelegramBot(telegramClient, AppProperties.BOT_USERNAME, ipoService)
+    val telegramClient = OkHttpTelegramClient(TelegramProperties.BOT_TOKEN)
+    val telegramBot = TelegramBot(telegramClient, TelegramProperties.BOT_USERNAME, ipoService, activeGroupsService)
 
     telegramBot.onRegister()
-    botApplication.registerBot(AppProperties.BOT_TOKEN, telegramBot)
+    botApplication.registerBot(TelegramProperties.BOT_TOKEN, telegramBot)
 
     return telegramBot
-
 }

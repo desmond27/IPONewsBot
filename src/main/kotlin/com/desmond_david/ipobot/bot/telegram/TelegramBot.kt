@@ -1,6 +1,6 @@
 package com.desmond_david.ipobot.bot.telegram
 
-import com.desmond_david.ipobot.AppProperties
+import com.desmond_david.ipobot.TelegramProperties
 import com.desmond_david.ipobot.bot.IPOBot
 import com.desmond_david.ipobot.database.IpoDto
 import com.desmond_david.ipobot.service.ActiveGroupsService
@@ -20,15 +20,15 @@ import java.time.format.DateTimeParseException
 class TelegramBot(
     telegramClient: TelegramClient,
     botUsername: String,
-    ipoService: IPOService
+    private val service: IPOService,
+    private val activeGroupsService: ActiveGroupsService,
 ) : AbilityBot(telegramClient, botUsername), IPOBot {
 
     private val logger = KotlinLogging.logger {}
-    private val service: IPOService = ipoService
-    private val activeGroupsService = ActiveGroupsService()
+    private val botName = "telegram"
 
     override fun creatorId(): Long {
-        return AppProperties.BOT_CREATOR_ID
+        return TelegramProperties.BOT_CREATOR_ID
     }
 
     fun startBot(): Ability {
@@ -41,8 +41,8 @@ class TelegramBot(
             .action { ctx: MessageContext ->
                 val chatId = ctx.chatId()
                 logger.info { "Activating the bot for chat id: ${ctx.chatId()}" }
-                if (!activeGroupsService.isGroupAlreadyActive(chatId.toString())) {
-                    activeGroupsService.addToActiveGroups(chatId.toString(), "telegram")
+                if (!activeGroupsService.isGroupAlreadyActive(chatId.toString(), getBotName())) {
+                    activeGroupsService.addToActiveGroups(chatId.toString(), getBotName())
                     silent.send("Bot enabled for this group.", chatId)
                 } else {
                     silent.send("Bot is already enabled for this group.", chatId)
@@ -61,8 +61,8 @@ class TelegramBot(
             .action { ctx: MessageContext ->
                 val chatId = ctx.chatId()
                 logger.info { "Deactivating the bot for chat id: ${ctx.chatId()}" }
-                if (activeGroupsService.isGroupAlreadyActive(chatId.toString())) {
-                    activeGroupsService.removeActiveGroup(chatId.toString())
+                if (activeGroupsService.isGroupAlreadyActive(chatId.toString(), getBotName())) {
+                    activeGroupsService.removeActiveGroup(chatId.toString())    // Might be problematic, perhaps bot name needed as well?
                     silent.send("Bot disabled for this group.", chatId)
                 } else {
                     silent.send("Bot is already disabled for this group.", chatId)
@@ -107,6 +107,10 @@ class TelegramBot(
             .build()
     }
 
+    override fun getBotName(): String {
+        return botName
+    }
+
     override fun sendTodaysClosingIPOInfo() {
         // Read IPOs closing today from the DB. IPO data is expected to be refereshed by this point.
         logger.info { "Getting IPOs closing today..." }
@@ -126,7 +130,7 @@ class TelegramBot(
     fun getGetIposClosingOn(): Ability {
         return Ability.builder()
             .name("closingon")
-            .info("Gets a list of IPOs closing today")
+            .info("Gets a list of IPOs closing on the given day.")
             .input(1)
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
@@ -171,12 +175,12 @@ class TelegramBot(
         if (result != null)
             silent.send(
                 "IPO data refreshed successfully from ${service.getServiceName()}",
-                ctx?.chatId() ?: AppProperties.CONTROL_GROUP_CHAT_ID
+                ctx?.chatId() ?: TelegramProperties.CONTROL_GROUP_CHAT_ID
             )
         else
             silent.send(
                 "Could not refresh IPO data from ${service.getServiceName()}. Check logs for errors.",
-                ctx?.chatId() ?: AppProperties.CONTROL_GROUP_CHAT_ID
+                ctx?.chatId() ?: TelegramProperties.CONTROL_GROUP_CHAT_ID
             )
     }
 
@@ -217,7 +221,7 @@ class TelegramBot(
     }
 
     private fun canRun(ctx: MessageContext): Boolean {
-        if (ctx.chatId() != AppProperties.CONTROL_GROUP_CHAT_ID) {
+        if (ctx.chatId() != TelegramProperties.CONTROL_GROUP_CHAT_ID) {
             silent.send("This command can only be run from the control group.", ctx.chatId())
             return false
         }
