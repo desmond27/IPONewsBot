@@ -7,15 +7,20 @@ import com.desmond_david.ipobot.database.IpoDto
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.json.JSONArray
-import org.json.JSONObject
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import okhttp3.OkHttpClient
 import org.jsoup.Jsoup
+import java.io.IOException
 import java.time.LocalDate
 
 private const val SERVICE_NAME = "Investorgain"
 private const val SERVICE_URL = "https://webnodejs.investorgain.com/cloud/v2/report/data-read/331/1/2/2025/2024-25/0/all"
 
-class InvestorgainService : IPOService {
+class InvestorgainService(
+    private val client: OkHttpClient,
+    private val mapper: ObjectMapper
+) : IPOService {
     private val logger = KotlinLogging.logger {}
 
     override fun getServiceName(): String {
@@ -24,20 +29,35 @@ class InvestorgainService : IPOService {
 
     override fun saveData(): Int? {
         logger.info { "Saving data from Investorgain to db..." }
-        val ipoDataList = mutableListOf<IpoDto>()
-        try {
-            val responseJsonObject =
-                khttp.get(SERVICE_URL).jsonObject
-            val reportTableDataJsonArray = responseJsonObject.get("reportTableData") as JSONArray
-            for (entry in reportTableDataJsonArray) {
-                logger.debug { "Reading entry: $entry" }
 
-                ipoDataList.add(
-                    InvestorgainResponseMapper().mapToDto(entry as JSONObject)
-                )
+        val ipoDataList = mutableListOf<IpoDto>()
+
+        try {
+            val request = okhttp3.Request.Builder().url(SERVICE_URL).build()
+
+            client.newCall(request).execute().use { response ->
+
+                if (!response.isSuccessful) throw IOException("Unexpected HTTP code ${'$'}{response.code}")
+
+                val bodyString = response.body?.string() ?: throw IOException("Empty response body")
+
+                // Use Jackson to parse JSON instead of org.json
+                val rootNode: JsonNode = mapper.readTree(bodyString)
+                val reportTableDataJsonArray = rootNode.get("reportTableData")
+
+                for (entry in reportTableDataJsonArray) {
+                    logger.debug { "Reading entry: $entry" }
+
+                    // Convert JsonNode to IpoDto using the mapper
+                    val dto = InvestorgainResponseMapper().mapToDto(entry)
+                    ipoDataList.add(dto)
+                }
+
+                DatabaseHelper.storeToDb(ipoDataList)
+
+                // Return number of processed entries if array, otherwise 0
+                return if (reportTableDataJsonArray.isArray) reportTableDataJsonArray.size() else 0
             }
-            DatabaseHelper.storeToDb(ipoDataList)
-            return reportTableDataJsonArray.length()
         } catch (e: Exception) {
             logger.error(e) { "Error getting data from Investorgain" }
             return null
@@ -96,35 +116,38 @@ class InvestorgainService : IPOService {
 
 class InvestorgainResponseMapper {
 
-    fun mapToDto(json: JSONObject): IpoDto {
+    fun mapToDto(json: JsonNode): IpoDto {
+        // Helper to parse HTML fragments if any
         fun parseHtml(value: String?): String =
             if (value.isNullOrBlank()) "" else Jsoup.parse(value).text()
 
+        // Parse integer from string with default fallback
         fun parseIntOrDefault(raw: String?, default: Int = -1): Int {
             if (raw.isNullOrBlank()) return default
             val cleaned = raw.filter { it.isDigit() }
             return cleaned.toIntOrNull() ?: default
         }
 
+        // Parse date from string key
         fun parseDate(key: String): LocalDate? {
-            val v = json.optString(key)
+            val v = json.get(key)?.asText()
             return if (v.isNullOrBlank()) null else LocalDate.parse(v)
         }
 
-        val nameFromHtml = parseHtml(json.optString("Name")).substringBeforeLast(" ").trim()
-        val fallbackName = parseHtml(json.optString("~ipo_name"))
+        val nameFromHtml = parseHtml(json.get("Name")?.asText()).substringBeforeLast(" ").trim()
+        val fallbackName = parseHtml(json.get("~ipo_name")?.asText())
         val ipoName = nameFromHtml.ifBlank { fallbackName }
 
-        val rating = parseHtml(json.optString("Rating"))
-        val sub = parseHtml(json.optString("Sub"))
+        val rating = parseHtml(json.get("Rating")?.asText())
+        val sub = parseHtml(json.get("Sub")?.asText())
 
-        val priceRaw = json.optString("Price")
+        val priceRaw = json.get("Price")?.asText() ?: ""
         val price = if (priceRaw.equals("NA", ignoreCase = true)) -1 else parseIntOrDefault(priceRaw, -1)
 
-        val gmp = parseHtml(json.optString("GMP"))
-        val ipoSize = parseHtml(json.optString("IPO Size"))
+        val gmp = parseHtml(json.get("GMP")?.asText())
+        val ipoSize = parseHtml(json.get("IPO Size")?.asText())
 
-        val lotRaw = json.optString("Lot")
+        val lotRaw = json.get("Lot")?.asText() ?: ""
         val lot = if (lotRaw.equals("TBD", ignoreCase = true)) -1 else parseIntOrDefault(lotRaw, -1)
 
         val open = parseDate("~Srt_Open")
@@ -132,7 +155,7 @@ class InvestorgainResponseMapper {
         val boaDate = parseDate("~Srt_BoA_Dt")
         val listing = parseDate("~Str_Listing")
 
-        val gmpPercent = json.optString("~gmp_percent_calc").takeIf { it.isNotBlank() }
+        val gmpPercent = json.get("~gmp_percent_calc")?.asText()?.takeIf { it.isNotBlank() }
 
         return IpoDto(
             ipo = ipoName,
