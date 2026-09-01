@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.jsoup.Jsoup
 import java.io.IOException
 import java.time.LocalDate
@@ -33,7 +34,7 @@ class InvestorgainService(
         val ipoDataList = mutableListOf<IpoDto>()
 
         try {
-            val request = okhttp3.Request.Builder().url(SERVICE_URL).build()
+            val request = Request.Builder().url(SERVICE_URL).build()
 
             client.newCall(request).execute().use { response ->
 
