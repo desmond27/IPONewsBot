@@ -22,6 +22,7 @@ class InvestorgainService(
     private val client: OkHttpClient,
     private val mapper: ObjectMapper
 ) : IPOService {
+    
     private val logger = KotlinLogging.logger {}
 
     override fun getServiceName(): String {
@@ -41,8 +42,6 @@ class InvestorgainService(
                 if (!response.isSuccessful) throw IOException("Unexpected HTTP code ${'$'}{response.code}")
 
                 val bodyString = response.body?.string() ?: throw IOException("Empty response body")
-
-                // Use Jackson to parse JSON instead of org.json
                 val rootNode: JsonNode = mapper.readTree(bodyString)
                 val reportTableDataJsonArray = rootNode.get("reportTableData")
 

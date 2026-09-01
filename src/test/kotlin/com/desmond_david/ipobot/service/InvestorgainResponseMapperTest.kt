@@ -11,6 +11,7 @@ import kotlin.test.assertNull
 class InvestorgainResponseMapperTest {
 
     private val mapper = InvestorgainResponseMapper()
+    private val jsonMapper = ObjectMapper()
 
     private val sampleResponse =
         """
@@ -44,7 +45,6 @@ class InvestorgainResponseMapperTest {
 
     @Test
     fun mapToDto_withAllFields_parsesCorrectly() {
-        val jsonMapper = ObjectMapper()
         val json: JsonNode = jsonMapper.readTree(sampleResponse)
 
         val dto: IpoDto = mapper.mapToDto(json)
@@ -74,7 +74,6 @@ class InvestorgainResponseMapperTest {
 
     @Test
     fun mapToDto_handlesNA_TBD_andEmpty() {
-        val jsonMapper = ObjectMapper()
         val json: JsonNode = jsonMapper.readTree(
             """
             {
@@ -120,7 +119,6 @@ class InvestorgainResponseMapperTest {
 
     @Test
     fun mapToDto_usesFallbackIpoName_whenNameMissingOrBlank() {
-        val jsonMapper = ObjectMapper()
         val json: JsonNode = jsonMapper.readTree(
             """
             {
