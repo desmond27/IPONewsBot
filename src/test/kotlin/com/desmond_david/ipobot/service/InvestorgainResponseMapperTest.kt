@@ -1,7 +1,8 @@
 package com.desmond_david.ipobot.service
 
 import com.desmond_david.ipobot.database.IpoDto
-import org.json.JSONObject
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -10,39 +11,41 @@ import kotlin.test.assertNull
 class InvestorgainResponseMapperTest {
 
     private val mapper = InvestorgainResponseMapper()
+    private val jsonMapper = ObjectMapper()
+
+    private val sampleResponse =
+        """
+        {
+          "~orderby1": 5500,
+          "Name": "<a href=\"/gmp/\" title=\"Test One IPO\" target=\"_parent\">Test One IPO</a> <span class=\"badge rounded-pill bg-warning d-inline ms-2\" >U</span>",
+          "GMP": "&#8377;<b>21</b> (21.65%)<br><small style=\"font-size: 12px; color: #007BFF;\"><b>21-Aug 23:34</b></small>",
+          "Rating": "<span style='font-size: 12px;'>&#128293;&#128293;&#128293;&#128293;</span>",
+          "Sub": "",
+          "Price": "97",
+          "IPO Size": "&#8377;772.00 Cr",
+          "Lot": "148",
+          "~P/E": "22.88",
+          "~id": 1385,
+          "Open": "26-Aug",
+          "Close": "29-Aug",
+          "BoA Dt": "1-Sep",
+          "Listing": "3-Sep",
+          "~Srt_Open": "2025-08-26",
+          "~Srt_Close": "2025-08-29",
+          "~Srt_BoA_Dt": "2025-09-01",
+          "~Str_Listing": "2025-09-03",
+          "~urlrewrite_folder_name": "/gmp/test-one-ipo/1385/",
+          "~Display_Order": 5500,
+          "~Highlight_Row": "color-lightyellow",
+          "~IPO_Category": "IPO",
+          "~gmp_percent_calc": "21.65",
+          "~ipo_name": "Test One IPO"
+        }
+        """.trimIndent()
 
     @Test
     fun mapToDto_withAllFields_parsesCorrectly() {
-        val json = JSONObject(
-            """
-            {
-              "~orderby1": 5500,
-              "Name": "<a href=\"/gmp/\" title=\"Test One IPO\" target=\"_parent\">Test One IPO</a> <span class=\"badge rounded-pill bg-warning d-inline ms-2\" >U</span>",
-              "GMP": "&#8377;<b>21</b> (21.65%)<br><small style=\"font-size: 12px; color: #007BFF;\"><b>21-Aug 23:34</b></small>",
-              "Rating": "<span style='font-size: 12px;'>&#128293;&#128293;&#128293;&#128293;</span>",
-              "Sub": "",
-              "Price": "97",
-              "IPO Size": "&#8377;772.00 Cr",
-              "Lot": "148",
-              "~P/E": "22.88",
-              "~id": 1385,
-              "Open": "26-Aug",
-              "Close": "29-Aug",
-              "BoA Dt": "1-Sep",
-              "Listing": "3-Sep",
-              "~Srt_Open": "2025-08-26",
-              "~Srt_Close": "2025-08-29",
-              "~Srt_BoA_Dt": "2025-09-01",
-              "~Str_Listing": "2025-09-03",
-              "~urlrewrite_folder_name": "/gmp/test-one-ipo/1385/",
-              "~Display_Order": 5500,
-              "~Highlight_Row": "color-lightyellow",
-              "~IPO_Category": "IPO",
-              "~gmp_percent_calc": "21.65",
-              "~ipo_name": "Test One IPO"
-            }
-            """.trimIndent()
-        )
+        val json: JsonNode = jsonMapper.readTree(sampleResponse)
 
         val dto: IpoDto = mapper.mapToDto(json)
 
@@ -71,7 +74,7 @@ class InvestorgainResponseMapperTest {
 
     @Test
     fun mapToDto_handlesNA_TBD_andEmpty() {
-        val json = JSONObject(
+        val json: JsonNode = jsonMapper.readTree(
             """
             {
               "Name": "<b>Sample IPO U</b>",
@@ -116,7 +119,7 @@ class InvestorgainResponseMapperTest {
 
     @Test
     fun mapToDto_usesFallbackIpoName_whenNameMissingOrBlank() {
-        val json = JSONObject(
+        val json: JsonNode = jsonMapper.readTree(
             """
             {
               "Name": "",
