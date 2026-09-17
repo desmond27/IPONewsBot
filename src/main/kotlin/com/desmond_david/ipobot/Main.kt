@@ -45,7 +45,12 @@ fun main() {
     }
 }
 
-fun initTelegramBot(ipoService: IPOService, activeGroupsService: ActiveGroupsService, httpClient: OkHttpClient, objectMapper: ObjectMapper): TelegramBot {
+fun initTelegramBot(
+    ipoService: IPOService,
+    activeGroupsService: ActiveGroupsService,
+    httpClient: OkHttpClient,
+    objectMapper: ObjectMapper
+): TelegramBot {
 
     val botApplication = TelegramBotsLongPollingApplication()
     val telegramClient =

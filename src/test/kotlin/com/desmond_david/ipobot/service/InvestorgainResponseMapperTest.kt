@@ -37,7 +37,7 @@ class InvestorgainResponseMapperTest {
           "~urlrewrite_folder_name": "/gmp/test-one-ipo/1385/",
           "~Display_Order": 5500,
           "~Highlight_Row": "color-lightyellow",
-          "~IPO_Category": "IPO",
+          "~IPO_Category": "SME",
           "~gmp_percent_calc": "21.65",
           "~ipo_name": "Test One IPO"
         }
@@ -50,7 +50,7 @@ class InvestorgainResponseMapperTest {
         val dto: IpoDto = mapper.mapToDto(json)
 
         // Name should be taken from "Name" HTML, trimming the trailing status "U"
-        assertEquals("Test One IPO", dto.ipo)
+        assertEquals("Test One IPO (SME)", dto.ipo)
         // Fire rating flames should become plain text (4 fire emojis)
         assertEquals("🔥🔥🔥🔥", dto.rating)
         // Sub field is empty -> empty string
@@ -95,7 +95,7 @@ class InvestorgainResponseMapperTest {
 
         val dto = mapper.mapToDto(json)
 
-        assertEquals("Sample IPO", dto.ipo)
+        assertEquals("Sample IPO (Mainboard)", dto.ipo)
         // Empty rating HTML -> empty string
         assertEquals("", dto.rating)
         // Sub should be text content
@@ -134,7 +134,7 @@ class InvestorgainResponseMapperTest {
 
         val dto = mapper.mapToDto(json)
 
-        assertEquals("Fallback IPO Name", dto.ipo)
+        assertEquals("Fallback IPO Name (Mainboard)", dto.ipo)
         assertEquals(123, dto.price)
         assertEquals("₹10.00 Cr", dto.ipoSize)
         assertEquals(100, dto.lot)
