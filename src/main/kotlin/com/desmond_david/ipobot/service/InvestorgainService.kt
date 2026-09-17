@@ -134,9 +134,13 @@ class InvestorgainResponseMapper {
             return if (v.isNullOrBlank()) null else LocalDate.parse(v)
         }
 
+        var ipoCategory = json.get("~IPO_Category")?.asText()
+        if(ipoCategory.isNullOrBlank() || ipoCategory == "IPO") {
+            ipoCategory = "Mainboard"
+        }
         val nameFromHtml = parseHtml(json.get("Name")?.asText()).substringBeforeLast(" ").trim()
         val fallbackName = parseHtml(json.get("~ipo_name")?.asText())
-        val ipoName = nameFromHtml.ifBlank { fallbackName }
+        val ipoName = nameFromHtml.ifBlank { fallbackName } + " (${ipoCategory})"
 
         val rating = parseHtml(json.get("Rating")?.asText())
         val sub = parseHtml(json.get("Sub")?.asText())
