@@ -3,8 +3,8 @@ package com.desmond_david.ipobot.service
 import com.desmond_david.ipobot.database.ActiveGroupsDao
 import com.desmond_david.ipobot.database.ActiveGroupsTable
 import com.desmond_david.ipobot.database.DatabaseHelper
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
 import java.nio.file.Files

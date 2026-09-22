@@ -90,13 +90,13 @@ class TelegramBot(
 
     fun getTodaysClosingIpos(): Ability {
         return Ability.builder()
-            .name("closingtoday")
-            .info("Gets a list of IPOs closing today")
+            .name("postclosingtoday")
+            .info("Posts a list of IPOs closing today to subscribed groups.")
             .input(0)
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx: MessageContext ->
-                if (canRun(ctx)) {
+                if (isCalledFromControlGroup(ctx)) {
 
                     // Refresh the IPO data
                     refreshIpoData(ctx)
@@ -160,7 +160,7 @@ class TelegramBot(
             .locality(Locality.GROUP)
             .privacy(Privacy.GROUP_ADMIN)
             .action { ctx: MessageContext ->
-                if (canRun(ctx)) {
+                if (isCalledFromControlGroup(ctx)) {
                     logger.info { "Refreshing IPO db." }
                     silent.send("Refreshing IPO data from ${service.getServiceName()}", ctx.chatId())
                     refreshIpoData(ctx)
@@ -220,9 +220,9 @@ class TelegramBot(
         return message1
     }
 
-    private fun canRun(ctx: MessageContext): Boolean {
+    private fun isCalledFromControlGroup(ctx: MessageContext): Boolean {
         if (ctx.chatId() != TelegramProperties.CONTROL_GROUP_CHAT_ID) {
-            silent.send("This command can only be run from the control group.", ctx.chatId())
+            silent.send("This command can only be run by the bot owners.", ctx.chatId())
             return false
         }
 

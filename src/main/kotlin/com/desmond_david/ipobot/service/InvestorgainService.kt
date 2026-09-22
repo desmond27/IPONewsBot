@@ -4,13 +4,14 @@ import com.desmond_david.ipobot.database.DatabaseHelper
 import com.desmond_david.ipobot.database.IPODataTable.close
 import com.desmond_david.ipobot.database.IPODataTableDao
 import com.desmond_david.ipobot.database.IpoDto
-import io.github.oshai.kotlinlogging.KotlinLogging
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.transactions.transaction
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.oshai.kotlinlogging.KotlinLogging
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jsoup.Jsoup
 import java.io.IOException
 import java.time.LocalDate

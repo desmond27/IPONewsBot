@@ -12,10 +12,10 @@ import com.desmond_david.ipobot.database.IPODataTable.price
 import com.desmond_david.ipobot.database.IPODataTable.rating
 import com.desmond_david.ipobot.database.IPODataTable.sub
 import io.github.oshai.kotlinlogging.KotlinLogging
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.batchUpsert
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.batchUpsert
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 val logger = KotlinLogging.logger {}
 private const val connectionString = "jdbc:sqlite:ipobot.db"
