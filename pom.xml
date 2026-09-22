@@ -64,6 +64,7 @@
                 <version>2.22.2</version>
                 <configuration>
                     <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
+                    <argLine />
                 </configuration>
             </plugin>
             <plugin>
